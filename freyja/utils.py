@@ -373,36 +373,36 @@ def makePlot_simple(agg_df, lineages, outputFn, config, lineage_info):
     plt.savefig(outputFn)
     plt.close()
 
-# Function to make pie charts for each sample
-def makePieCharts_simple(agg_df, lineages, outputFnBase):
-    # Prepare the lineage dictionary if lineages is given
+def makePieCharts_simple(agg_df, lineages, outputFn, config, lineage_info):
     if lineages:
         queryType = 'linDict'
-        agg_df = prepLineageDict(agg_d0)
+        config = config.get('Lineages')
+        agg_df = prepLineageDict(agg_df, config=config,
+                                 lineage_info=lineage_info)
+
     else:
-        return
+        queryType = 'summarized'
+        config = config.get('VOC')
+        agg_df = prepSummaryDict(agg_df)
 
-    # Loop over all samples in the DataFrame
-    for k in range(0, agg_df.shape[0]):
-        # Extract the lineage dictionary for the current sample
-        dat = agg_df.iloc[k][queryType]
+    # Make piechart for each sample in the aggregated dataset
+    for i, sampLabel in enumerate(agg_df.index):
+        plt.figure(figsize=(10, 8))
+        dat = agg_df.loc[sampLabel, queryType]
         if isinstance(dat, list):
-            loc = pd.Series(dat[0])
-        else:
-            loc = pd.Series(dat)
+            dat = dat[0]
+        # Pie chart
+        labels = list(dat.keys())
+        sizes = list(dat.values())
 
-    # Create the pie chart
-    fig, ax = plt.subplots()
-    ax.pie(loc, labels=loc.index, autopct='%1.1f%%', shadow=True, startangle=90)
-    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-    # Use the sample name in the filename and the title
-    sample_name = agg_df.index[k]
-    plt.title(sample_name)
-    plt.savefig(outputFnBase + sample_name + '.png')
-    plt.close()
-
-
+        default_colors = px.colors.qualitative.Dark24
+        color_scheme = get_color_scheme(pd.DataFrame([dat]), {len(default_colors): default_colors}, config)
+        colors = [color_scheme[label] for label in labels]
+        
+        plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)
+        plt.title(f"{sampLabel}_Variant Prevalence", fontdict={'fontsize': 20})
+        plt.savefig(outputFn + f"_{sampLabel}_PieChart.png")
+        plt.close()
 
 def makePlot_time(agg_df, lineages, times_df, interval, outputFn,
                   windowSize, config, lineage_info):
