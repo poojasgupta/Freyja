@@ -334,8 +334,9 @@ def aggregate(results, ext, output):
 @click.option('--mincov', default=60., help='min genome coverage included')
 @click.option('--output', default='mix_plot.pdf', help='Output file')
 @click.option('--windowsize', default=14)
+@click.option('--piechart', is_flag=True, help='Generate pie charts')
 def plot(agg_results, lineages, times, interval, output, windowsize,
-         config, mincov):
+         config, mincov, piechart):
     agg_df = pd.read_csv(agg_results, skipinitialspace=True, sep='\t',
                          index_col=0)
     # drop poor quality samples
@@ -370,7 +371,10 @@ to include coverage estimates.')
     agg_df['abundances'] = agg_df['abundances'].astype(str)
     agg_df['summarized'] = agg_df['summarized'].astype(str)
     agg_df = agg_df[agg_df['summarized'] != '[]']
-    if times == '-1':
+    if piechart:
+        # If --piechart option is selected, generate pie chart
+        makePieCharts_simple(agg_df, lineages, output, config, lineage_info)
+    elif times == '-1':
         # make basic plot, without time info
         makePlot_simple(agg_df, lineages, output, config, lineage_info)
     else:
