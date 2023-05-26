@@ -373,6 +373,36 @@ def makePlot_simple(agg_df, lineages, outputFn, config, lineage_info):
     plt.savefig(outputFn)
     plt.close()
 
+# Function to make pie charts for each sample
+def makePieCharts_simple(agg_df, lineages, outputFnBase):
+    # Prepare the lineage dictionary if lineages is given
+    if lineages:
+        queryType = 'linDict'
+        agg_df = prepLineageDict(agg_d0)
+    else:
+        return
+
+    # Loop over all samples in the DataFrame
+    for k in range(0, agg_df.shape[0]):
+        # Extract the lineage dictionary for the current sample
+        dat = agg_df.iloc[k][queryType]
+        if isinstance(dat, list):
+            loc = pd.Series(dat[0])
+        else:
+            loc = pd.Series(dat)
+
+    # Create the pie chart
+    fig, ax = plt.subplots()
+    ax.pie(loc, labels=loc.index, autopct='%1.1f%%', shadow=True, startangle=90)
+    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    # Use the sample name in the filename and the title
+    sample_name = agg_df.index[k]
+    plt.title(sample_name)
+    plt.savefig(outputFnBase + sample_name + '.png')
+    plt.close()
+
+
 
 def makePlot_time(agg_df, lineages, times_df, interval, outputFn,
                   windowSize, config, lineage_info):
