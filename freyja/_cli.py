@@ -11,7 +11,7 @@ from freyja.updates import download_tree, convert_tree,\
     get_curated_lineage_data, get_cl_lineages,\
     download_barcodes, download_barcodes_wgisaid,\
     convert_tree_custom
-from freyja.utils import agg, makePlot_simple, makePlot_time,\
+from freyja.utils import agg, makePlot_simple, makePieCharts_simple, makePlot_time,\
     make_dashboard, checkConfig, get_abundance, calc_rel_growth_rates
 import os
 import glob
